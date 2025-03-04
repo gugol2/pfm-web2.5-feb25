@@ -1,1 +1,13 @@
-console.log("This is the pfm-web2.5-feb25 from gugol!");
+import { exec } from "child_process";
+
+exec("script/script.sh", (error, stdout, stderr) => {
+  if (error) {
+    console.error(`Error executing script: ${error.message}`);
+    return;
+  }
+  if (stderr) {
+    console.error(`Script stderr: ${stderr}`);
+    return;
+  }
+  console.log(`Script output: ${stdout}`);
+});
