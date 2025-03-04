@@ -1,0 +1,25 @@
+{
+  "name": "pfm-web2.5-feb25-gugol",
+  "version": "1.0.0",
+  "description": "## **Motivación**",
+  "main": "index.js",
+  "type": "module",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "start": "npm run build && node ./dist/index.js",
+    "dev": "node --no-warnings=ExperimentalWarning --loader ts-node/esm lib/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}
