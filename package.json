@@ -8,10 +8,11 @@
     "lib": "lib"
   },
   "scripts": {
+    "make-script-executable": "chmod +x script/script.sh",
     "build": "tsc",
     "build:watch": "tsc -w",
-    "start": "npm run build && node ./dist/index.js",
-    "dev": "nodemon --exec node --no-warnings=ExperimentalWarning --loader ts-node/esm lib/index.ts",
+    "start": "npm run make-script-executable && npm run build && node ./dist/index.js",
+    "dev": "npm run make-script-executable && nodemon --exec node --no-warnings=ExperimentalWarning --loader ts-node/esm lib/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
