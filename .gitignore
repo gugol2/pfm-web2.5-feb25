@@ -2,6 +2,10 @@
 /database
 /logs
 
+# App specific
+/network/*.*
+!/network/info.txt
+
 # Compiled TypeScript
 /dist
 /build
