@@ -1,4 +1,5 @@
 import { writeFileSync } from "fs";
+import { resolve } from "path";
 
 interface GenesisConfig {
   chainId: number;
@@ -6,7 +7,14 @@ interface GenesisConfig {
   validators: string[];
 }
 
+const networkRelativePath = `lib/besu/network`;
+
 export function createGenesisFile(config: GenesisConfig) {
+  const genesisFilePath = resolve(
+    process.cwd(),
+    `${networkRelativePath}/genesis.json`
+  );
+
   const genesis = {
     config: {
       chainId: config.chainId,
@@ -33,8 +41,5 @@ export function createGenesisFile(config: GenesisConfig) {
     gasLimit: "0x47b760",
   };
 
-  writeFileSync(
-    "lib/besu/network/genesis.json",
-    JSON.stringify(genesis, null, 2)
-  );
+  writeFileSync(genesisFilePath, JSON.stringify(genesis, null, 2));
 }

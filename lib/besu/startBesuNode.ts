@@ -1,7 +1,19 @@
 import Docker from "dockerode";
 import { NodeConfig } from "../types";
+import { resolve } from "path";
+
+const networkRelativePath = `lib/besu/network`;
 
 export async function startBesuNode(docker: Docker, config: NodeConfig) {
+  const dataVolumePath = resolve(
+    process.cwd(),
+    `${networkRelativePath}/${config.name}/data`
+  );
+  const genesisPath = resolve(
+    process.cwd(),
+    `${networkRelativePath}/genesis.json`
+  );
+
   const container = await docker.createContainer({
     Image: "hyperledger/besu:latest",
     name: config.name,
@@ -16,8 +28,8 @@ export async function startBesuNode(docker: Docker, config: NodeConfig) {
         "30303/tcp": [{ HostPort: `${config.port}` }],
       },
       Binds: [
-        `./network/${config.name}/data:/var/lib/besu`,
-        `./network/genesis.json:/var/lib/besu/genesis.json`,
+        `${dataVolumePath}:/var/lib/besu`,
+        `${genesisPath}:/var/lib/besu/genesis.json`,
       ],
     },
     Cmd: [

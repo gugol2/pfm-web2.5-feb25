@@ -1,16 +1,25 @@
 import { writeFileSync } from "fs";
+import { resolve as resolvedMocked } from "path";
 import { createGenesisFile } from "./createGenesisFile";
 
 jest.mock("fs", () => ({
   writeFileSync: jest.fn(),
 }));
 
+jest.mock("path", () => ({
+  resolve: jest.fn(),
+}));
+
 describe("genesis-generator", () => {
+  const mockedGenesisFilePath = "/mock/path/to/genesis.json";
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it("should generate the correct genesis JSON file", () => {
+    (resolvedMocked as jest.Mock).mockReturnValue(mockedGenesisFilePath);
+
     const config = {
       chainId: 1337,
       period: 15,
@@ -53,7 +62,7 @@ describe("genesis-generator", () => {
     };
 
     expect(writeFileSync).toHaveBeenCalledWith(
-      "lib/besu/network/genesis.json",
+      mockedGenesisFilePath,
       JSON.stringify(expectedGenesis, null, 2)
     );
   });
