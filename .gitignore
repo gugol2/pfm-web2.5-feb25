@@ -5,7 +5,6 @@
 # Compiled TypeScript
 /dist
 /build
-*.js
 *.js.map
 *.d.ts
 
