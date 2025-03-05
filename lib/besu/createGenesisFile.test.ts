@@ -1,5 +1,5 @@
 import { writeFileSync } from "fs";
-import { createGenesisFile } from "./genesis-generator";
+import { createGenesisFile } from "./createGenesisFile";
 
 jest.mock("fs", () => ({
   writeFileSync: jest.fn(),
