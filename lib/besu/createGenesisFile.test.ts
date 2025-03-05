@@ -17,8 +17,14 @@ describe("genesis-generator", () => {
     jest.clearAllMocks();
   });
 
+  test("reads env NETWORK_FOLDER_PATH variable", () => {
+    expect(process.env.NETWORK_FOLDER_PATH).toBeDefined();
+  });
+
   it("should generate the correct genesis JSON file", () => {
-    (resolvedMocked as jest.Mock).mockReturnValue(mockedGenesisFilePath);
+    (resolvedMocked as jest.Mock).mockImplementation(
+      (_pwd, relativePath) => relativePath
+    );
 
     const config = {
       chainId: 1337,
@@ -62,7 +68,7 @@ describe("genesis-generator", () => {
     };
 
     expect(writeFileSync).toHaveBeenCalledWith(
-      mockedGenesisFilePath,
+      `${process.env.NETWORK_FOLDER_PATH}/genesis.json`,
       JSON.stringify(expectedGenesis, null, 2)
     );
   });

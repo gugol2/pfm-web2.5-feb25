@@ -7,8 +7,6 @@ jest.mock("path", () => ({
 }));
 
 describe("startBesuNode", () => {
-  const networkRelativePath = `lib/besu/network`;
-
   let createContainerMock: jest.Mock;
   let startMock: jest.Mock;
   let docker: Dockerode;
@@ -28,10 +26,13 @@ describe("startBesuNode", () => {
     } as unknown as Dockerode;
 
     (resolvedMocked as jest.Mock).mockImplementation(
-      (pwd, relativePath) => relativePath
+      (_pwd, relativePath) => relativePath
     );
   });
 
+  test("reads env NETWORK_FOLDER_PATH variable", () => {
+    expect(process.env.NETWORK_FOLDER_PATH).toBeDefined();
+  });
   it("should create and start a container with correct configuration", async () => {
     const config = {
       name: "test-node",
@@ -56,8 +57,8 @@ describe("startBesuNode", () => {
           "30303/tcp": [{ HostPort: `${config.port}` }],
         },
         Binds: [
-          `${networkRelativePath}/${config.name}/data:/var/lib/besu`,
-          `${networkRelativePath}/genesis.json:/var/lib/besu/genesis.json`,
+          `${process.env.NETWORK_FOLDER_PATH}/${config.name}/data:/var/lib/besu`,
+          `${process.env.NETWORK_FOLDER_PATH}/genesis.json:/var/lib/besu/genesis.json`,
         ],
       },
       Cmd: [

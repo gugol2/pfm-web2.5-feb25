@@ -1,5 +1,6 @@
 import { writeFileSync } from "fs";
 import { resolve } from "path";
+import "dotenv/config";
 
 interface GenesisConfig {
   chainId: number;
@@ -7,12 +8,12 @@ interface GenesisConfig {
   validators: string[];
 }
 
-const networkRelativePath = `lib/besu/network`;
+const NETWORK_FOLDER_PATH = process.env.NETWORK_FOLDER_PATH;
 
 export function createGenesisFile(config: GenesisConfig) {
   const genesisFilePath = resolve(
     process.cwd(),
-    `${networkRelativePath}/genesis.json`
+    `${NETWORK_FOLDER_PATH}/genesis.json`
   );
 
   const genesis = {

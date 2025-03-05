@@ -1,17 +1,18 @@
 import Docker from "dockerode";
 import { NodeConfig } from "../types";
 import { resolve } from "path";
+import "dotenv/config";
 
-const networkRelativePath = `lib/besu/network`;
+const NETWORK_FOLDER_PATH = process.env.NETWORK_FOLDER_PATH;
 
 export async function startBesuNode(docker: Docker, config: NodeConfig) {
   const dataVolumePath = resolve(
     process.cwd(),
-    `${networkRelativePath}/${config.name}/data`
+    `${NETWORK_FOLDER_PATH}/${config.name}/data`
   );
   const genesisPath = resolve(
     process.cwd(),
-    `${networkRelativePath}/genesis.json`
+    `${NETWORK_FOLDER_PATH}/genesis.json`
   );
 
   const container = await docker.createContainer({
