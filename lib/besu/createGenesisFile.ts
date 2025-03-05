@@ -33,5 +33,8 @@ export function createGenesisFile(config: GenesisConfig) {
     gasLimit: "0x47b760",
   };
 
-  writeFileSync("./network/genesis.json", JSON.stringify(genesis, null, 2));
+  writeFileSync(
+    "lib/besu/network/genesis.json",
+    JSON.stringify(genesis, null, 2)
+  );
 }

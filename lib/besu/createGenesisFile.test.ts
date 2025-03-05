@@ -53,7 +53,7 @@ describe("genesis-generator", () => {
     };
 
     expect(writeFileSync).toHaveBeenCalledWith(
-      "./network/genesis.json",
+      "lib/besu/network/genesis.json",
       JSON.stringify(expectedGenesis, null, 2)
     );
   });
