@@ -1,5 +1,13 @@
 import Docker from "dockerode";
 
-const docker = new Docker();
+let docker: Docker | null = null;
 
-export { docker };
+const initDocker = () => {
+  if (!docker) {
+    docker = new Docker();
+  }
+
+  return docker;
+};
+
+export { initDocker };
