@@ -1,11 +1,5 @@
 import Docker from "dockerode";
-
-interface NodeConfig {
-  name: string;
-  port: number;
-  rpcPort: number;
-  validatorAddress: string;
-}
+import { NodeConfig } from "types";
 
 export async function startBesuNode(docker: Docker, config: NodeConfig) {
   const container = await docker.createContainer({
