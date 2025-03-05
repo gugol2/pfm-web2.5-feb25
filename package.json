@@ -34,6 +34,7 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
-    "dockerode": "^4.0.4"
+    "dockerode": "^4.0.4",
+    "ethers": "^6.13.5"
   }
 }
