@@ -7,4 +7,5 @@ export default {
     "^.+\\.ts$": "ts-jest", // Use ts-jest to transpile TypeScript files
   },
   testMatch: ["**/*.test.ts"],
+  setupFiles: ["dotenv/config"],
 };

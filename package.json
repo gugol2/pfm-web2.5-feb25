@@ -35,7 +35,9 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
+    "@types/dotenv": "^6.1.1",
     "dockerode": "^4.0.4",
+    "dotenv": "^16.4.7",
     "ethers": "^6.13.5"
   }
 }
