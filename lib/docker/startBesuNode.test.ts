@@ -1,5 +1,5 @@
 import Dockerode from "dockerode";
-import { startBesuNode } from "./docker/startBesuNode";
+import { startBesuNode } from "./startBesuNode";
 
 describe("startBesuNode", () => {
   let createContainerMock: jest.Mock;
