@@ -1,5 +1,5 @@
 import Docker from "dockerode";
-import { NodeConfig } from "types";
+import { NodeConfig } from "../types";
 
 export async function startBesuNode(docker: Docker, config: NodeConfig) {
   const container = await docker.createContainer({

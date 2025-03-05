@@ -8,12 +8,6 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "sourceMap": true,
-    "baseUrl": "lib",
-    "paths": {
-      "@types/*": [
-        "lib/types/*"
-      ]
-    }
   },
   "include": [
     "script",
