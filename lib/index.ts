@@ -1,13 +1,20 @@
-import { exec } from "child_process";
+import readline from "readline";
+import { runScript } from "./runScript.js";
 
-exec("script/script.sh", (error, stdout, stderr) => {
-  if (error) {
-    console.error(`Error executing script: ${error.message}`);
-    return;
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+rl.question("Do you want to run the script? (y/n)", (response) => {
+  if (response.toLowerCase() === "y") {
+    console.log("running script");
+    runScript();
+  } else if (response.toLowerCase() === "n") {
+    console.log("ok, not running the script");
+  } else {
+    console.log("Option not available!");
   }
-  if (stderr) {
-    console.error(`Script stderr: ${stderr}`);
-    return;
-  }
-  console.log(`Script output: ${stdout}`);
+
+  rl.close();
 });
