@@ -8,6 +8,7 @@ const initializeNetwork = async (config: {
   nodeCount: number;
   chainId: number;
   blockPeriod: number;
+  emptyblocks?: boolean;
 }) => {
   let nodes: NodeConfig[] = [];
 
@@ -21,6 +22,7 @@ const initializeNetwork = async (config: {
     chainId: config.chainId,
     period: config.blockPeriod,
     validators: validators.map((v) => v.address),
+    createemptyblocks: config.emptyblocks ?? true,
   });
 
   // Configure nodes
@@ -45,6 +47,7 @@ export const createNetwork = async () => {
     nodeCount: 3,
     chainId: 1337,
     blockPeriod: 15,
+    emptyblocks: false, // Optional: Set to true to create empty blocks
   });
 
   console.log({ configuratedNodes });

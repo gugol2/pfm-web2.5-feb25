@@ -40,11 +40,26 @@ describe("genesis-generator", () => {
     const expectedGenesis = {
       config: {
         chainId: 1337,
+        berlinBlock: 0,
         clique: {
           blockperiodseconds: 15,
           epochlength: 30000,
+          createemptyblocks: true,
         },
       },
+      coinbase: "0x0000000000000000000000000000000000000000",
+      difficulty: "0x1",
+      extraData:
+        "0x" +
+        "0".repeat(64) +
+        "0x1111111111111111111111111111111111111111" +
+        "0x2222222222222222222222222222222222222222" +
+        "0".repeat(130),
+      gasLimit: "0xa00000",
+      mixHash:
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+      nonce: "0x0",
+      timestamp: "0x5c51a607",
       alloc: {
         "0x1111111111111111111111111111111111111111": {
           balance:
@@ -55,16 +70,6 @@ describe("genesis-generator", () => {
             "0x200000000000000000000000000000000000000000000000000000000000000",
         },
       },
-      coinbase: "0x0000000000000000000000000000000000000000",
-      extraData:
-        "0x" +
-        "0".repeat(64) +
-        "0x1111111111111111111111111111111111111111" +
-        "0x2222222222222222222222222222222222222222" +
-        "0".repeat(130),
-      nonce: "0x0",
-      timestamp: "0x5f95b113",
-      gasLimit: "0x47b760",
     };
 
     expect(writeFileSync).toHaveBeenCalledWith(
