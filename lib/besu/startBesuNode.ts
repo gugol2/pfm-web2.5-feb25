@@ -6,13 +6,9 @@ import "dotenv/config";
 const NETWORK_FOLDER_PATH = process.env.NETWORK_FOLDER_PATH;
 
 export async function startBesuNode(docker: Docker, config: NodeConfig) {
-  const dataVolumePath = resolve(
+  const absoluteHostNetworkPath = resolve(
     process.cwd(),
-    `${NETWORK_FOLDER_PATH}/${config.name}/data`
-  );
-  const genesisPath = resolve(
-    process.cwd(),
-    `${NETWORK_FOLDER_PATH}/genesis.json`
+    `${NETWORK_FOLDER_PATH}`
   );
 
   const container = await docker.createContainer({
@@ -29,8 +25,8 @@ export async function startBesuNode(docker: Docker, config: NodeConfig) {
         "30303/tcp": [{ HostPort: `${config.port}` }],
       },
       Binds: [
-        `${dataVolumePath}:/data`,
-        `${genesisPath}:/var/lib/besu/genesis.json`,
+        `${absoluteHostNetworkPath}/${config.name}/data:/data`,
+        `${absoluteHostNetworkPath}/genesis.json:/var/lib/besu/genesis.json`,
       ],
     },
     Cmd: [
