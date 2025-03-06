@@ -3,8 +3,9 @@
 /logs
 
 # App specific
-/lib/besu/network/*.*
+/lib/besu/network/*
 !/lib/besu/network/info.txt
+
 
 # Compiled TypeScript
 /dist
