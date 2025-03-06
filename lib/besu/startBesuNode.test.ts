@@ -57,7 +57,7 @@ describe("startBesuNode", () => {
           "30303/tcp": [{ HostPort: `${config.port}` }],
         },
         Binds: [
-          `${process.env.NETWORK_FOLDER_PATH}/${config.name}/data:/var/lib/besu`,
+          `${process.env.NETWORK_FOLDER_PATH}/${config.name}/data:/data`,
           `${process.env.NETWORK_FOLDER_PATH}/genesis.json:/var/lib/besu/genesis.json`,
         ],
       },

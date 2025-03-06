@@ -29,7 +29,7 @@ export async function startBesuNode(docker: Docker, config: NodeConfig) {
         "30303/tcp": [{ HostPort: `${config.port}` }],
       },
       Binds: [
-        `${dataVolumePath}:/var/lib/besu`,
+        `${dataVolumePath}:/data`,
         `${genesisPath}:/var/lib/besu/genesis.json`,
       ],
     },
