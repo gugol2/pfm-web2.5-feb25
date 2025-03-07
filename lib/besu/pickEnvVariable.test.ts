@@ -16,39 +16,39 @@ describe("pickEnvVariable", () => {
 
   it("should return the correct environment variable value", () => {
     // Arrange
-    process.env.TEST_NETWORK = "/path/to/network";
+    process.env.TEST_VARIABLE = "/path/to/varaiable";
 
     // Act
-    const result = pickEnvVariable("TEST_NETWORK");
+    const result = pickEnvVariable("TEST_VARIABLE");
 
     // Assert
-    expect(result).toBe("/path/to/network");
+    expect(result).toBe("/path/to/varaiable");
   });
 
-  it("should return the correct value for different network names", () => {
+  it("should return the correct value for different varaiable names", () => {
     // Arrange
-    process.env.NETWORK_1 = "/path/network1";
-    process.env.NETWORK_2 = "/path/network2";
+    process.env.VARIABLE_1 = "/path/network1";
+    process.env.VARIABLE_2 = "/path/network2";
 
     // Act & Assert
-    expect(pickEnvVariable("NETWORK_1")).toBe("/path/network1");
-    expect(pickEnvVariable("NETWORK_2")).toBe("/path/network2");
+    expect(pickEnvVariable("VARIABLE_1")).toBe("/path/network1");
+    expect(pickEnvVariable("VARIABLE_2")).toBe("/path/network2");
   });
 
-  it("should throw an error when the network is not defined in env", () => {
+  it("should throw an error when the varaiable is not defined in env", () => {
     // Arrange - ensure the env variable doesn't exist
-    delete process.env.UNDEFINED_NETWORK;
+    delete process.env.UNDEFINED_VARIABLE;
 
     // Act & Assert
     expect(() => {
-      pickEnvVariable("UNDEFINED_NETWORK");
-    }).toThrow("UNDEFINED_NETWORK is not defined in the .env file");
+      pickEnvVariable("UNDEFINED_VARIABLE");
+    }).toThrow("UNDEFINED_VARIABLE is not defined in the .env file");
   });
 
-  it("should throw an error with the correct message including the network name", () => {
+  it("should throw an error with the correct message including the varaiable name", () => {
     // Act & Assert
     expect(() => {
-      pickEnvVariable("CUSTOM_NETWORK");
-    }).toThrow("CUSTOM_NETWORK is not defined in the .env file");
+      pickEnvVariable("CUSTOM_VARIABLE");
+    }).toThrow("CUSTOM_VARIABLE is not defined in the .env file");
   });
 });

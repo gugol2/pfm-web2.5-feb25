@@ -1,6 +1,6 @@
 import { writeFileSync } from "fs";
 import { resolve } from "path";
-import "dotenv/config";
+import { pickEnvVariable } from "./pickEnvVariable";
 
 interface GenesisConfig {
   chainId: number;
@@ -9,12 +9,12 @@ interface GenesisConfig {
   createemptyblocks?: boolean;
 }
 
-const NETWORK_FOLDER_PATH = process.env.NETWORK_FOLDER_PATH;
-
 export function createGenesisFile(config: GenesisConfig) {
+  const networkFolderPath = pickEnvVariable("NETWORK_FOLDER_PATH");
+
   const genesisFilePath = resolve(
     process.cwd(),
-    `${NETWORK_FOLDER_PATH}/genesis.json`
+    `${networkFolderPath}/genesis.json`
   );
 
   const genesis = {

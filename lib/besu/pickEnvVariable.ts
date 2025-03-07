@@ -1,10 +1,10 @@
 import "dotenv/config";
 
-const pickEnvVariable = (network: string): string => {
-  const networkFolderPath = process.env[network];
+const pickEnvVariable = (envVariable: string): string => {
+  const networkFolderPath = process.env[envVariable];
 
   if (!networkFolderPath) {
-    throw new Error(`${network} is not defined in the .env file`);
+    throw new Error(`${envVariable} is not defined in the .env file`);
   }
 
   return networkFolderPath;

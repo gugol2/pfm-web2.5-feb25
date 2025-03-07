@@ -1,6 +1,7 @@
 import { writeFileSync } from "fs";
 import { resolve as resolvedMocked } from "path";
 import { createGenesisFile } from "./createGenesisFile";
+import { pickEnvVariable as pickEnvVariableMocked } from "./pickEnvVariable";
 
 jest.mock("fs", () => ({
   writeFileSync: jest.fn(),
@@ -10,32 +11,37 @@ jest.mock("path", () => ({
   resolve: jest.fn(),
 }));
 
-describe("genesis-generator", () => {
-  const mockedGenesisFilePath = "/mock/path/to/genesis.json";
+jest.mock("./pickEnvVariable");
 
+describe("genesis-generator", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test("reads env NETWORK_FOLDER_PATH variable", () => {
-    expect(process.env.NETWORK_FOLDER_PATH).toBeDefined();
-  });
+  const mockedNetworkFolderPath = "/path/to/network";
+  const mockedErrorMessage = "::mocked not existing env variable::";
+  const config = {
+    chainId: 1337,
+    period: 15,
+    validators: [
+      "0x1111111111111111111111111111111111111111",
+      "0x2222222222222222222222222222222222222222",
+    ],
+  };
 
   it("should generate the correct genesis JSON file", () => {
+    (pickEnvVariableMocked as jest.Mock).mockImplementation(
+      () => mockedNetworkFolderPath
+    );
+
     (resolvedMocked as jest.Mock).mockImplementation(
       (_pwd, relativePath) => relativePath
     );
 
-    const config = {
-      chainId: 1337,
-      period: 15,
-      validators: [
-        "0x1111111111111111111111111111111111111111",
-        "0x2222222222222222222222222222222222222222",
-      ],
-    };
-
     createGenesisFile(config);
+
+    expect(pickEnvVariableMocked).toHaveBeenCalledTimes(1);
+    expect(pickEnvVariableMocked).toHaveBeenCalledWith("NETWORK_FOLDER_PATH");
 
     const expectedGenesis = {
       config: {
@@ -73,8 +79,21 @@ describe("genesis-generator", () => {
     };
 
     expect(writeFileSync).toHaveBeenCalledWith(
-      `${process.env.NETWORK_FOLDER_PATH}/genesis.json`,
+      `${mockedNetworkFolderPath}/genesis.json`,
       JSON.stringify(expectedGenesis, null, 2)
     );
+  });
+
+  it("should throw an error if the picking of the env variable fails", async () => {
+    (pickEnvVariableMocked as jest.Mock).mockImplementation(() => {
+      throw new Error(mockedErrorMessage);
+    });
+
+    try {
+      createGenesisFile(config);
+      fail("Expected an error");
+    } catch (e: any) {
+      expect(e.message).toEqual(mockedErrorMessage);
+    }
   });
 });

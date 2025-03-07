@@ -1,13 +1,13 @@
 import Docker from "dockerode";
 import { resolve } from "path";
-import "dotenv/config";
-
-const NETWORK_FOLDER_PATH = process.env.NETWORK_FOLDER_PATH;
+import { pickEnvVariable } from "./pickEnvVariable.js";
 
 const startFirstBesuNode = async (docker: Docker, containerName: string) => {
+  const networkFolderPath = pickEnvVariable("NETWORK_FOLDER_PATH");
+
   const dataVolumePath = resolve(
     process.cwd(),
-    `${NETWORK_FOLDER_PATH}/${containerName}/data`
+    `${networkFolderPath}/${containerName}/data`
   );
 
   const container = await docker.createContainer({

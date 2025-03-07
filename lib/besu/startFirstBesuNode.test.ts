@@ -1,10 +1,13 @@
 import Dockerode from "dockerode";
 import { resolve as resolvedMocked } from "path";
+import { pickEnvVariable as pickEnvVariableMocked } from "./pickEnvVariable";
 import { startFirstBesuNode } from "./startFirstBesuNode";
 
 jest.mock("path", () => ({
   resolve: jest.fn(),
 }));
+
+jest.mock("./pickEnvVariable");
 
 describe("startFirstBesuNode", () => {
   let createContainerMock: jest.Mock;
@@ -30,13 +33,23 @@ describe("startFirstBesuNode", () => {
     );
   });
 
-  test("reads env NETWORK_FOLDER_PATH variable", () => {
-    expect(process.env.NETWORK_FOLDER_PATH).toBeDefined();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
+
+  const mockedNetworkFolderPath = "/path/to/network";
+  const containerName = "::containerName::";
+  const mockedErrorMessage = "::mocked not existing env variable::";
+
   it("should create and start a container with correct configuration", async () => {
-    const containerName = "::containerName::";
+    (pickEnvVariableMocked as jest.Mock).mockImplementation(
+      () => mockedNetworkFolderPath
+    );
 
     const container = await startFirstBesuNode(docker, containerName);
+
+    expect(pickEnvVariableMocked).toHaveBeenCalledTimes(1);
+    expect(pickEnvVariableMocked).toHaveBeenCalledWith("NETWORK_FOLDER_PATH");
 
     expect(createContainerMock).toHaveBeenCalledWith({
       Image: "hyperledger/besu:latest",
@@ -44,9 +57,7 @@ describe("startFirstBesuNode", () => {
 
       HostConfig: {
         AutoRemove: true,
-        Binds: [
-          `${process.env.NETWORK_FOLDER_PATH}/${containerName}/data:/data`,
-        ],
+        Binds: [`${mockedNetworkFolderPath}/${containerName}/data:/data`],
       },
       Cmd: [
         "--data-path=/data",
@@ -58,5 +69,21 @@ describe("startFirstBesuNode", () => {
 
     expect(startMock).toHaveBeenCalled(); // Ensure the container starts
     expect(container).toEqual({ start: startMock }); // Ensure it returns the mocked container
+  });
+
+  it("should throw an error if the picking of the env variable fails", async () => {
+    (pickEnvVariableMocked as jest.Mock).mockImplementation(() => {
+      throw new Error(mockedErrorMessage);
+    });
+
+    let container;
+    try {
+      container = await startFirstBesuNode(docker, containerName);
+      fail("Expected an error");
+    } catch (e: any) {
+      expect(e.message).toEqual(mockedErrorMessage);
+      expect(container).toEqual(undefined);
+      expect(startMock).not.toHaveBeenCalled();
+    }
   });
 });

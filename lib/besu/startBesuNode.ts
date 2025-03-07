@@ -1,14 +1,14 @@
 import Docker from "dockerode";
 import { NodeConfig } from "../types";
 import { resolve } from "path";
-import "dotenv/config";
-
-const NETWORK_FOLDER_PATH = process.env.NETWORK_FOLDER_PATH;
+import { pickEnvVariable } from "./pickEnvVariable";
 
 export async function startBesuNode(docker: Docker, config: NodeConfig) {
+  const networkFolderPath = pickEnvVariable("NETWORK_FOLDER_PATH");
+
   const absoluteHostNetworkPath = resolve(
     process.cwd(),
-    `${NETWORK_FOLDER_PATH}`
+    `${networkFolderPath}`
   );
 
   const container = await docker.createContainer({
