@@ -2,7 +2,10 @@ import Docker from "dockerode";
 import { resolve } from "path";
 import { pickEnvVariable } from "./pickEnvVariable.js";
 
-const startFirstBesuNode = async (docker: Docker, containerName: string) => {
+const getAddressForFirstNode = async (
+  docker: Docker,
+  containerName: string
+) => {
   const networkFolderPath = pickEnvVariable("NETWORK_FOLDER_PATH");
 
   const dataVolumePath = resolve(
@@ -29,4 +32,4 @@ const startFirstBesuNode = async (docker: Docker, containerName: string) => {
   return container;
 };
 
-export { startFirstBesuNode };
+export { getAddressForFirstNode };

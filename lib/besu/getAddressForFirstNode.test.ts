@@ -1,7 +1,7 @@
 import Dockerode from "dockerode";
 import { resolve as resolvedMocked } from "path";
 import { pickEnvVariable as pickEnvVariableMocked } from "./pickEnvVariable";
-import { startFirstBesuNode } from "./startFirstBesuNode";
+import { getAddressForFirstNode } from "./getAddressForFirstNode";
 
 jest.mock("path", () => ({
   resolve: jest.fn(),
@@ -9,7 +9,7 @@ jest.mock("path", () => ({
 
 jest.mock("./pickEnvVariable");
 
-describe("startFirstBesuNode", () => {
+describe("getAddressForFirstNode", () => {
   let createContainerMock: jest.Mock;
   let startMock: jest.Mock;
   let docker: Dockerode;
@@ -46,7 +46,7 @@ describe("startFirstBesuNode", () => {
       () => mockedNetworkFolderPath
     );
 
-    const container = await startFirstBesuNode(docker, containerName);
+    const container = await getAddressForFirstNode(docker, containerName);
 
     expect(pickEnvVariableMocked).toHaveBeenCalledTimes(1);
     expect(pickEnvVariableMocked).toHaveBeenCalledWith("NETWORK_FOLDER_PATH");
@@ -78,7 +78,7 @@ describe("startFirstBesuNode", () => {
 
     let container;
     try {
-      container = await startFirstBesuNode(docker, containerName);
+      container = await getAddressForFirstNode(docker, containerName);
       fail("Expected an error");
     } catch (e: any) {
       expect(e.message).toEqual(mockedErrorMessage);
