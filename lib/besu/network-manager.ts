@@ -21,7 +21,10 @@ const initializeNetwork = async (config: {
   createGenesisFile({
     chainId: config.chainId,
     period: config.blockPeriod,
-    validators: validators.map((v) => v.address),
+    validators: validators.map((v) => ({
+      address: v.address,
+      privateKey: v.privateKey,
+    })),
     createemptyblocks: config.emptyblocks ?? true,
   });
 

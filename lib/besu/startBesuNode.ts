@@ -1,7 +1,7 @@
 import Docker from "dockerode";
 import { NodeConfig } from "../types";
 import { resolve } from "path";
-import { pickEnvVariable } from "./pickEnvVariable";
+import { pickEnvVariable } from "./pickEnvVariable.js";
 
 export async function startBesuNode(docker: Docker, config: NodeConfig) {
   const networkFolderPath = pickEnvVariable("NETWORK_FOLDER_PATH");

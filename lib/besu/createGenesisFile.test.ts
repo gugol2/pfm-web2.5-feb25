@@ -24,8 +24,14 @@ describe("genesis-generator", () => {
     chainId: 1337,
     period: 15,
     validators: [
-      "0x1111111111111111111111111111111111111111",
-      "0x2222222222222222222222222222222222222222",
+      {
+        address: "0x1111111111111111111111111111111111111111",
+        privateKey: "0x1234567890",
+      },
+      {
+        address: "0x2222222222222222222222222222222222222222",
+        privateKey: "0xabcdef1234",
+      },
     ],
   };
 
@@ -68,10 +74,16 @@ describe("genesis-generator", () => {
       timestamp: "0x5c51a607",
       alloc: {
         "0x1111111111111111111111111111111111111111": {
+          privateKey: config.validators[0].privateKey,
+          comment:
+            "private key and this comment are ignored.  In a real chain, the private key should NOT be stored",
           balance:
             "0x200000000000000000000000000000000000000000000000000000000000000",
         },
         "0x2222222222222222222222222222222222222222": {
+          privateKey: config.validators[1].privateKey,
+          comment:
+            "private key and this comment are ignored.  In a real chain, the private key should NOT be stored",
           balance:
             "0x200000000000000000000000000000000000000000000000000000000000000",
         },
