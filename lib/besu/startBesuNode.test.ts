@@ -38,8 +38,9 @@ describe("startBesuNode", () => {
 
   const config = {
     name: "test-node",
-    port: 30303,
     rpcPort: 8545,
+    wsPort: 8546,
+    p2pPort: 30303,
     validatorAddress: "0x1234567890abcdef",
   };
 
@@ -64,7 +65,8 @@ describe("startBesuNode", () => {
       HostConfig: {
         PortBindings: {
           "8545/tcp": [{ HostPort: `${config.rpcPort}` }],
-          "30303/tcp": [{ HostPort: `${config.port}` }],
+          "8546/tcp": [{ HostPort: `${config.wsPort}` }],
+          "30303/tcp": [{ HostPort: `${config.p2pPort}` }],
         },
         Binds: [
           `${mockedNetworkFolderPath}/${config.name}/data:/data`,

@@ -1,6 +1,7 @@
 export interface NodeConfig {
   name: string;
-  port: number;
+  p2pPort: number;
   rpcPort: number;
+  wsPort: number;
   validatorAddress: string;
 }

@@ -22,7 +22,8 @@ export async function startBesuNode(docker: Docker, config: NodeConfig) {
     HostConfig: {
       PortBindings: {
         "8545/tcp": [{ HostPort: `${config.rpcPort}` }],
-        "30303/tcp": [{ HostPort: `${config.port}` }],
+        "8546/tcp": [{ HostPort: `${config.wsPort}` }],
+        "30303/tcp": [{ HostPort: `${config.p2pPort}` }],
       },
       Binds: [
         `${absoluteHostNetworkPath}/${config.name}/data:/data`,
