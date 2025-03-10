@@ -21,24 +21,33 @@ async function getNetworkIdIfExists(
 // Function to get containers connected to a network
 async function getContainersInNetwork(
   docker: Docker,
-  networkId: string
+  networkName: string
 ): Promise<Docker.ContainerInfo[]> {
   try {
-    const network = docker.getNetwork(networkId);
-    const info = await network.inspect();
+    // List all containers (including stopped ones)
+    const containers = await docker.listContainers({ all: true });
 
-    const containerIds = Object.keys(info.Containers || {});
+    // Filter containers that belong to the specified network
+    const filteredContainers = [];
 
-    if (containerIds.length === 0) {
-      return [];
+    for (const container of containers) {
+      // Get detailed container info to check networks
+      const containerDetails = await docker
+        .getContainer(container.Id)
+        .inspect();
+
+      // Check if the container is connected to the specified network
+      if (
+        containerDetails.NetworkSettings.Networks &&
+        containerDetails.NetworkSettings.Networks[networkName]
+      ) {
+        filteredContainers.push(container);
+      }
     }
 
-    const containers = await docker.listContainers({ all: true });
-    return containers.filter((container) =>
-      containerIds.includes(container.Id)
-    );
+    return filteredContainers;
   } catch (error) {
-    console.error("Error getting containers in network:", error);
+    console.error("Error fetching containers:", error);
     throw error;
   }
 }
@@ -53,6 +62,8 @@ async function disconnectAndStopContainer(
     const network = docker.getNetwork(networkId);
     const container = docker.getContainer(containerId);
 
+    console.log({ container });
+
     // Disconnect container from network
     await network.disconnect({ Container: containerId });
     console.log(
@@ -66,6 +77,9 @@ async function disconnectAndStopContainer(
       await container.stop();
       console.log(`Stopped container ${containerId.substring(0, 12)}`);
     }
+
+    await container.remove();
+    console.log(`Removed container ${containerId.substring(0, 12)}`);
   } catch (error) {
     console.error(`Error handling container ${containerId}:`, error);
     throw error;
@@ -120,11 +134,7 @@ async function setupDockerNetwork(
         `Network "${networkName}" already exists with ID ${existingNetworkId}`
       );
 
-      // Get containers connected to the network
-      const containers = await getContainersInNetwork(
-        docker,
-        existingNetworkId
-      );
+      const containers = await getContainersInNetwork(docker, networkName);
 
       // Disconnect and stop all containers in the network
       if (containers.length > 0) {
