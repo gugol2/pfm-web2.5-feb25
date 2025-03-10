@@ -26,11 +26,11 @@ export async function startBesuNode(docker: Docker, config: NodeConfig) {
       },
       Binds: [
         `${absoluteHostNetworkPath}/${config.name}/data:/data`,
-        `${absoluteHostNetworkPath}/genesis.json:/var/lib/besu/genesis.json`,
+        `${absoluteHostNetworkPath}/cliqueGenesis.json:/var/lib/besu/cliqueGenesis.json`,
       ],
     },
     Cmd: [
-      "--genesis-file=/var/lib/besu/genesis.json",
+      "--genesis-file=/var/lib/besu/cliqueGenesis.json",
       "--miner-enabled=true",
       `--miner-coinbase=${config.validatorAddress}`,
       "--rpc-http-enabled",

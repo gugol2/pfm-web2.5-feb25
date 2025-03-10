@@ -68,11 +68,11 @@ describe("startBesuNode", () => {
         },
         Binds: [
           `${mockedNetworkFolderPath}/${config.name}/data:/data`,
-          `${mockedNetworkFolderPath}/genesis.json:/var/lib/besu/genesis.json`,
+          `${mockedNetworkFolderPath}/cliqueGenesis.json:/var/lib/besu/cliqueGenesis.json`,
         ],
       },
       Cmd: [
-        "--genesis-file=/var/lib/besu/genesis.json",
+        "--genesis-file=/var/lib/besu/cliqueGenesis.json",
         "--miner-enabled=true",
         `--miner-coinbase=${config.validatorAddress}`,
         "--rpc-http-enabled",

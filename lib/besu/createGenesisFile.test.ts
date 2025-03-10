@@ -94,7 +94,7 @@ describe("genesis-generator", () => {
     };
 
     expect(writeFileSync).toHaveBeenCalledWith(
-      `${mockedNetworkFolderPath}/genesis.json`,
+      `${mockedNetworkFolderPath}/cliqueGenesis.json`,
       JSON.stringify(expectedGenesis, null, 2)
     );
   });

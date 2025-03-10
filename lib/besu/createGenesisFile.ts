@@ -14,7 +14,7 @@ export function createGenesisFile(config: GenesisConfig) {
 
   const genesisFilePath = resolve(
     process.cwd(),
-    `${networkFolderPath}/genesis.json`
+    `${networkFolderPath}/cliqueGenesis.json`
   );
 
   const genesis = {
