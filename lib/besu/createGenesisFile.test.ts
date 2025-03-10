@@ -20,16 +20,19 @@ describe("genesis-generator", () => {
 
   const mockedNetworkFolderPath = "/path/to/network";
   const mockedErrorMessage = "::mocked not existing env variable::";
+  const address1 = "0x1111111111111111111111111111111111111111";
+  const address2 = "0x2222222222222222222222222222222222222222";
+
   const config = {
     chainId: 1337,
     period: 15,
     validators: [
       {
-        address: "0x1111111111111111111111111111111111111111",
+        address: address1,
         privateKey: "0x1234567890",
       },
       {
-        address: "0x2222222222222222222222222222222222222222",
+        address: address2,
         privateKey: "0xabcdef1234",
       },
     ],
@@ -64,8 +67,8 @@ describe("genesis-generator", () => {
       extraData:
         "0x" +
         "0".repeat(64) +
-        "0x1111111111111111111111111111111111111111" +
-        "0x2222222222222222222222222222222222222222" +
+        address1.substring(2) +
+        address2.substring(2) +
         "0".repeat(130),
       gasLimit: "0xa00000",
       mixHash:
@@ -73,14 +76,14 @@ describe("genesis-generator", () => {
       nonce: "0x0",
       timestamp: "0x5c51a607",
       alloc: {
-        "0x1111111111111111111111111111111111111111": {
+        [`${address1.substring(2)}`]: {
           privateKey: config.validators[0].privateKey,
           comment:
             "private key and this comment are ignored.  In a real chain, the private key should NOT be stored",
           balance:
             "0x200000000000000000000000000000000000000000000000000000000000000",
         },
-        "0x2222222222222222222222222222222222222222": {
+        [`${address2.substring(2)}`]: {
           privateKey: config.validators[1].privateKey,
           comment:
             "private key and this comment are ignored.  In a real chain, the private key should NOT be stored",

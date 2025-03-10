@@ -30,7 +30,7 @@ export function createGenesisFile(config: GenesisConfig) {
     coinbase: "0x0000000000000000000000000000000000000000",
     difficulty: "0x1",
     extraData: `0x${"0".repeat(64)}${config.validators
-      .map((v) => v.address)
+      .map((v) => v.address.substring(2))
       .join("")}${"0".repeat(130)}`,
     gasLimit: "0xa00000",
     mixHash:
@@ -39,7 +39,7 @@ export function createGenesisFile(config: GenesisConfig) {
     timestamp: "0x5c51a607",
     alloc: Object.fromEntries(
       config.validators.map((wallet) => [
-        wallet.address,
+        wallet.address.substring(2),
         {
           privateKey: wallet.privateKey,
           comment:

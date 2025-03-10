@@ -2,16 +2,20 @@ import { Wallet } from "ethers";
 import { generateKeyPair } from "./generateKeyPair";
 
 describe("generateKeyPair", () => {
+  const addressHexRegex = /^0x[0-9a-f]{40}$/;
+  const privateKeyHexRegex = /^[0-9a-f]{64}$/;
+
   it("should generate a valid key pair", () => {
     const keyPair = generateKeyPair();
 
     // Check that privateKey exists and is a 64-character hex string
     expect(keyPair.privateKey).toBeDefined();
-    expect(keyPair.privateKey).toMatch(/^[0-9a-f]{64}$/);
+    expect(keyPair.privateKey).toMatch(privateKeyHexRegex);
 
     // Check that address exists and is a valid Ethereum address
     expect(keyPair.address).toBeDefined();
-    expect(keyPair.address).toMatch(/^0x[0-9a-f]{40}$/);
+    expect(keyPair.address.startsWith("0x")).toBe(true);
+    expect(keyPair.address).toMatch(addressHexRegex);
   });
 
   it("should generate unique key pairs", () => {
