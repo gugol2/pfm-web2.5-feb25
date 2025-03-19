@@ -1,6 +1,6 @@
 import { readFile } from "fs/promises";
 import { join } from "path";
-import { pickEnvVariable } from "./pickEnvVariable.js";
+import { pickEnvVariable } from "../pickEnvVariable.js";
 
 const readNodeAddressFromHost = async (
   containerName: string

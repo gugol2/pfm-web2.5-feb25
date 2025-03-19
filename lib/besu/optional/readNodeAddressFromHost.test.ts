@@ -1,12 +1,12 @@
 import { readFile } from "fs/promises";
 import { join as joinMocked } from "path";
 import { readNodeAddressFromHost } from "./readNodeAddressFromHost";
-import { pickEnvVariable as pickEnvVariableMocked } from "./pickEnvVariable";
+import { pickEnvVariable as pickEnvVariableMocked } from "../pickEnvVariable";
 
 // Mock dependencies
 jest.mock("fs/promises");
 jest.mock("path");
-jest.mock("./pickEnvVariable");
+jest.mock("../pickEnvVariable");
 
 describe("readNodeAddressFromHost", () => {
   beforeEach(() => {

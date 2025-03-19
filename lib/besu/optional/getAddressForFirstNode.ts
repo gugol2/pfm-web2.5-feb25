@@ -1,6 +1,6 @@
 import Docker from "dockerode";
 import { resolve } from "path";
-import { pickEnvVariable } from "./pickEnvVariable.js";
+import { pickEnvVariable } from "../pickEnvVariable.js";
 
 const getAddressForFirstNode = async (
   docker: Docker,
