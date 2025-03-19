@@ -12,7 +12,7 @@ describe("removeBesuNetworkFiles", () => {
     jest.clearAllMocks();
   });
 
-  test("should successfully remove besu network files", async () => {
+  test("should successfully remove besu network files if no argument provided", async () => {
     // Mock successful execution
     (execMocked as unknown as jest.Mock).mockImplementation(
       (command, callback) => {
@@ -36,6 +36,35 @@ describe("removeBesuNetworkFiles", () => {
     // Verify the output
     expect(result).toBe(
       "removed lib/besu/network/besu1\nremoved lib/besu/network/besu2"
+    );
+  });
+
+  test("should successfully remove ONLY besu-argulment network files when argument provided", async () => {
+    const besuNode = "::besuNode::";
+
+    // Mock successful execution
+    (execMocked as unknown as jest.Mock).mockImplementation(
+      (command, callback) => {
+        expect(command).toBe(`sudo rm -rfv lib/besu/network/${besuNode}`);
+        callback(
+          null,
+          `removed lib/besu/network/besu1\nremoved lib/besu/network/${besuNode}`,
+          ""
+        );
+      }
+    );
+
+    const result = await removeBesuNetworkFiles(besuNode);
+
+    // Verify exec was called correctly
+    expect(execMocked).toHaveBeenCalledWith(
+      `sudo rm -rfv lib/besu/network/${besuNode}`,
+      expect.any(Function)
+    );
+
+    // Verify the output
+    expect(result).toBe(
+      `removed lib/besu/network/besu1\nremoved lib/besu/network/${besuNode}`
     );
   });
 
