@@ -2,7 +2,7 @@ import pkg from "elliptic";
 const { ec: EC } = pkg;
 
 // Function to convert a private key to an enode public key
-const calculateEnode = (privateKeyHex: string): string => {
+const calculatePublicKeyForEnode = (privateKeyHex: string): string => {
   // Remove '0x' prefix if present
   if (privateKeyHex.startsWith("0x")) {
     privateKeyHex = privateKeyHex.slice(2);
@@ -36,4 +36,4 @@ const calculateEnode = (privateKeyHex: string): string => {
   return publicKeyWithoutPrefix;
 };
 
-export { calculateEnode };
+export { calculatePublicKeyForEnode };
