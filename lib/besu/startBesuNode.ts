@@ -33,7 +33,7 @@ export async function startBesuNode(docker: Docker, config: NodeConfig) {
     Cmd: [
       "--genesis-file=/var/lib/besu/cliqueGenesis.json",
       "--miner-enabled=true",
-      `--miner-coinbase=${config.validatorAddress}`,
+      `--miner-coinbase=${config.address}`,
       "--rpc-http-enabled",
       "--rpc-http-api=ETH,NET,CLIQUE",
       "--host-allowlist=*",

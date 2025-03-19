@@ -1,11 +1,12 @@
 import { writeFileSync } from "fs";
 import { resolve } from "path";
 import { pickEnvVariable } from "./pickEnvVariable.js";
+import { BesuAddress } from "../types/besu.types.js";
 
 interface GenesisConfig {
   chainId: number;
   period: number;
-  validators: { address: string; privateKey: string }[];
+  validators: BesuAddress[];
   createemptyblocks?: boolean;
 }
 
@@ -29,9 +30,9 @@ export function createGenesisFile(config: GenesisConfig) {
     },
     coinbase: "0x0000000000000000000000000000000000000000",
     difficulty: "0x1",
-    extraData: `0x${"0".repeat(64)}${config.validators
-      .map((v) => v.address.substring(2))
-      .join("")}${"0".repeat(130)}`,
+    extraData: `0x${"0".repeat(64)}${config.validators[0].address.substring(
+      2
+    )}${"0".repeat(130)}`,
     gasLimit: "0xa00000",
     mixHash:
       "0x0000000000000000000000000000000000000000000000000000000000000000",

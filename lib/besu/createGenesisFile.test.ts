@@ -65,11 +65,7 @@ describe("genesis-generator", () => {
       coinbase: "0x0000000000000000000000000000000000000000",
       difficulty: "0x1",
       extraData:
-        "0x" +
-        "0".repeat(64) +
-        address1.substring(2) +
-        address2.substring(2) +
-        "0".repeat(130),
+        "0x" + "0".repeat(64) + address1.substring(2) + "0".repeat(130),
       gasLimit: "0xa00000",
       mixHash:
         "0x0000000000000000000000000000000000000000000000000000000000000000",

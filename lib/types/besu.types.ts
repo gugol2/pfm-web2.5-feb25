@@ -3,5 +3,11 @@ export interface NodeConfig {
   p2pPort: number;
   rpcPort: number;
   wsPort: number;
-  validatorAddress: string;
+  address: string;
+  privateKey: string;
+}
+
+export interface BesuAddress {
+  address: string;
+  privateKey: string;
 }

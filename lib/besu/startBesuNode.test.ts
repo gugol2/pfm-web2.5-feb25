@@ -41,7 +41,8 @@ describe("startBesuNode", () => {
     rpcPort: 8545,
     wsPort: 8546,
     p2pPort: 30303,
-    validatorAddress: "0x1234567890abcdef",
+    address: "0x1234567890abcdef",
+    privateKey: "0xabcdef123456",
   };
 
   it("should create and start a container with correct configuration", async () => {
@@ -76,7 +77,7 @@ describe("startBesuNode", () => {
       Cmd: [
         "--genesis-file=/var/lib/besu/cliqueGenesis.json",
         "--miner-enabled=true",
-        `--miner-coinbase=${config.validatorAddress}`,
+        `--miner-coinbase=${config.address}`,
         "--rpc-http-enabled",
         "--rpc-http-api=ETH,NET,CLIQUE",
         "--host-allowlist=*",
