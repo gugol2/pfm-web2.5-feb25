@@ -1,13 +1,13 @@
 import Dockerode from "dockerode";
-import { startBesuNode } from "./startBesuNode";
-import { pickEnvVariable as pickEnvVariableMocked } from "./pickEnvVariable";
+import { startBesuNode } from "./startBesuNodeOld";
+import { pickEnvVariable as pickEnvVariableMocked } from "../pickEnvVariable";
 import { resolve as resolvedMocked } from "path";
 
 jest.mock("path", () => ({
   resolve: jest.fn(),
 }));
 
-jest.mock("./pickEnvVariable");
+jest.mock("../pickEnvVariable");
 
 describe("startBesuNode", () => {
   let createContainerMock: jest.Mock;
