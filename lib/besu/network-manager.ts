@@ -1,11 +1,9 @@
 import { initDocker } from "../docker/initDocker.js";
-import { startBesuNode } from "./startBesuNode.js";
-import { NodeConfig } from "../types";
 import { createGenesisFile } from "./createGenesisFile.js";
 import { generateKeyPair } from "./generateKeyPair.js";
 import { getAddressForFirstNode } from "./optional/getAddressForFirstNode.js";
 import { setupDockerNetwork } from "../docker/setupDockerNetwork.js";
-import { startFirstNodeAsBootNode } from "./startFirstNodeAsBootNode.js";
+import { startBesuNode } from "./startBesuNode.js";
 import {
   getEnodeInfo,
   waitForNodeAndGetEnode,
@@ -15,6 +13,9 @@ import { removeDockerContainer } from "../docker/removeDockerContainer.js";
 import { removeBesuNetworkFiles } from "./removeBesuNetworkFiles.js";
 import { createBesuNodeFolderStructure } from "./optional/createBesuNodeFolderStructure.js";
 import { readBesuPrivateKey } from "./readBesuPrivateKey.js";
+import Docker from "dockerode";
+import { NodeConfig } from "../types/besu.types.js";
+import { getContainerIp } from "./getContainerIp.js";
 
 const initializeNetwork = async (config: {
   nodeCount: number;
@@ -32,9 +33,9 @@ const initializeNetwork = async (config: {
   // Configure nodes
   nodes = validators.map((v, i) => ({
     name: `besu-node-${i}`,
-    rpcPort: 8545 + i,
-    wsPort: 8546 + i,
-    p2pPort: 30303 + i,
+    rpcPort: 8545 + 10 * i,
+    wsPort: 8546 + 10 * i,
+    p2pPort: 30303 + 10 * i,
     address: v.address,
     privateKey: v.privateKey,
   }));
@@ -42,9 +43,22 @@ const initializeNetwork = async (config: {
   return nodes;
 };
 
-const startAllNodes = async (nodes: NodeConfig[]) => {
-  const docker = initDocker();
-  return Promise.all(nodes.map((node) => startBesuNode(docker, node)));
+const startSlaveNodes = async (
+  docker: Docker,
+  nodes: NodeConfig[],
+  enode: string
+) => {
+  for (const node of nodes) {
+    const besuContainer = await startBesuNode({
+      docker,
+      nodeConfig: node,
+      networkName: "besu-clicke-network",
+      networkId: 123,
+      enode,
+    });
+
+    console.log({ besuContainer });
+  }
 };
 
 export const createNetwork = async () => {
@@ -98,25 +112,29 @@ export const createNetwork = async () => {
   // await removeDockerContainer(docker, configuratedNodes[0].name);
   // await removeBesuNetworkFiles();
 
-  const firstBootNode = await startFirstNodeAsBootNode(
+  const firstBootNode = await startBesuNode({
     docker,
-    configuratedNodes[0],
-    "besu-clicke-network"
-  );
+    nodeConfig: configuratedNodes[0],
+    networkName: "besu-clicke-network",
+    networkId: 123,
+  });
 
   console.log({ firstBootNode });
+
+  const bootNodeIp = await getContainerIp(firstBootNode, "besu-clicke-network");
+  console.log({ bootNodeIp });
 
   // Usage
   const privateKey = await readBesuPrivateKey(configuratedNodes[0].name);
 
   console.log({ privateKey });
   const bootNodePublicKey = calculatePublicKeyForEnode(privateKey);
-  const enode = `${bootNodePublicKey}@127.0.0.1:${configuratedNodes[0].p2pPort}`;
+  const enode = `enode://${bootNodePublicKey}@${bootNodeIp}:${configuratedNodes[0].p2pPort}`;
   console.log({ enode });
 
   // OPTIONAL
   // const enodeUrl = await waitForNodeAndGetEnode();
   // console.log({ enodeUrl });
 
-  // await startAllNodes(configuratedNodes);
+  await startSlaveNodes(docker, configuratedNodes.slice(1), enode);
 };
