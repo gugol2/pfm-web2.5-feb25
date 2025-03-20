@@ -7,16 +7,7 @@ export const generateKeyPair = (): BesuAddress => {
   const privateKeyBytes = "0x" + privateKey;
   const wallet = new Wallet(privateKeyBytes);
 
-  // Get the public key from the wallet's signingKey
-  const publicKey = wallet.signingKey.publicKey;
+  const address = wallet.address.toLowerCase();
 
-  const aver = {
-    privateKey,
-    publicKey,
-    address: wallet.address.toLowerCase(),
-  };
-
-  console.log({ aver });
-
-  return aver;
+  return { privateKey, address };
 };
