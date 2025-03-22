@@ -61,11 +61,11 @@ const startSlaveNodes = async (
   }
 };
 
-export const createNetwork = async () => {
+export const createNetwork = async (nodeCount: number) => {
   await removeBesuNetworkFiles();
 
   const config = {
-    nodeCount: 3,
+    nodeCount,
     chainId: 1337,
     blockPeriod: 15,
     emptyblocks: false, // Optional: Set to true to create empty blocks
