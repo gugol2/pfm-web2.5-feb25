@@ -11,3 +11,10 @@ export interface BesuAddress {
   address: string;
   privateKey: string;
 }
+
+export interface BesuNetworkConfig {
+  nodeCount: number;
+  chainId: number;
+  blockPeriod: number;
+  emptyblocks?: boolean;
+}

@@ -14,92 +14,108 @@ import { createBesuNodeFolderStructure } from "./optional/createBesuNodeFolderSt
 import { readBesuPrivateKey } from "./readBesuPrivateKey.js";
 import Docker from "dockerode";
 import { getContainerIp } from "./getContainerIp.js";
-import { createNodesConfiguration } from "./createNodesConfiguration";
+import { createNodesConfiguration } from "./createNodesConfiguration.js";
+import { validateNodeConfiguration } from "./validateNodeConfiguration.js";
 
 export const createNetwork = async (nodeCount: number) => {
-  await removeBesuNetworkFiles();
-
-  const config = {
+  const besuNetworkConfig = {
     nodeCount,
     chainId: 1337,
     blockPeriod: 15,
     emptyblocks: false, // Optional: Set to true to create empty blocks
   };
 
-  const configuratedNodes = await createNodesConfiguration(config);
+  try {
+    // Validate the node configuration
+    validateNodeConfiguration(besuNetworkConfig);
 
-  console.log({ configuratedNodes });
+    const configuratedNodes = await createNodesConfiguration(besuNetworkConfig);
 
-  const docker = initDocker();
+    await removeBesuNetworkFiles();
 
-  // Remove all the nodes
-  for (const nodeConfig of configuratedNodes) {
-    await removeDockerContainer(docker, nodeConfig.name);
-  }
+    console.log({ configuratedNodes });
 
-  // optional: create the network folder structure
-  // await createBesuNodeFolderStructure(
-  //   `${configuratedNodes[0].name}/data`,
-  //   "lib/besu/network/"
-  // );
+    const docker = initDocker();
 
-  // Pick the address of the first node (Optional)
-  // const addressContainer = await getAddressForFirstNode(
-  //   docker,
-  //   "besu-node-address"
-  // );
+    // Remove all the nodes
+    for (const nodeConfig of configuratedNodes) {
+      await removeDockerContainer(docker, nodeConfig.name);
+    }
 
-  // console.log({ addressContainer });
+    // optional: create the network folder structure
+    // await createBesuNodeFolderStructure(
+    //   `${configuratedNodes[0].name}/data`,
+    //   "lib/besu/network/"
+    // );
 
-  // Create genesis file
-  createGenesisFile({
-    chainId: config.chainId,
-    period: config.blockPeriod,
-    validators: configuratedNodes.map((cN) => ({
-      address: cN.address,
-      privateKey: cN.privateKey,
-    })),
-    createemptyblocks: config.emptyblocks ?? true,
-  });
+    // Pick the address of the first node (Optional)
+    // const addressContainer = await getAddressForFirstNode(
+    //   docker,
+    //   "besu-node-address"
+    // );
 
-  await setupDockerNetwork(docker, "besu-clicke-network");
+    // console.log({ addressContainer });
 
-  // await removeDockerContainer(docker, configuratedNodes[0].name);
-  // await removeBesuNetworkFiles();
-
-  const firstBootNode = await startBesuNode({
-    docker,
-    nodeConfig: configuratedNodes[0],
-    networkName: "besu-clicke-network",
-    networkId: 123,
-  });
-
-  console.log({ firstBootNode });
-
-  const bootNodeIp = await getContainerIp(firstBootNode, "besu-clicke-network");
-  console.log({ bootNodeIp });
-
-  // Usage
-  const privateKey = await readBesuPrivateKey(configuratedNodes[0].name);
-
-  console.log({ privateKey });
-  const bootNodePublicKey = calculatePublicKeyForEnode(privateKey);
-  const enode = `enode://${bootNodePublicKey}@${bootNodeIp}:${configuratedNodes[0].p2pPort}`;
-  console.log({ enode });
-
-  // OPTIONAL
-  // const enodeUrl = await waitForNodeAndGetEnode();
-  // console.log({ enodeUrl });
-
-  for (const nodeConfig of configuratedNodes.slice(1)) {
-    const besuContainer = await startBesuNode({
-      docker,
-      nodeConfig,
-      networkName: "besu-clicke-network",
-      networkId: 123,
-      enode,
+    // Create genesis file
+    createGenesisFile({
+      chainId: besuNetworkConfig.chainId,
+      period: besuNetworkConfig.blockPeriod,
+      validators: configuratedNodes.map((cN) => ({
+        address: cN.address,
+        privateKey: cN.privateKey,
+      })),
+      createemptyblocks: besuNetworkConfig.emptyblocks ?? true,
     });
 
-    console.log({ besuContainer });
+    await setupDockerNetwork(docker, "besu-clicke-network");
+
+    // await removeDockerContainer(docker, configuratedNodes[0].name);
+    // await removeBesuNetworkFiles();
+
+    const firstBootNode = await startBesuNode({
+      docker,
+      nodeConfig: configuratedNodes[0],
+      networkName: "besu-clicke-network",
+      networkId: 123,
+    });
+
+    console.log({ firstBootNode });
+
+    const bootNodeIp = await getContainerIp(
+      firstBootNode,
+      "besu-clicke-network"
+    );
+    console.log({ bootNodeIp });
+
+    // Usage
+    const privateKey = await readBesuPrivateKey(configuratedNodes[0].name);
+
+    console.log({ privateKey });
+    const bootNodePublicKey = calculatePublicKeyForEnode(privateKey);
+    const enode = `enode://${bootNodePublicKey}@${bootNodeIp}:${configuratedNodes[0].p2pPort}`;
+    console.log({ enode });
+
+    // OPTIONAL
+    // const enodeUrl = await waitForNodeAndGetEnode();
+    // console.log({ enodeUrl });
+
+    for (const nodeConfig of configuratedNodes.slice(1)) {
+      const besuContainer = await startBesuNode({
+        docker,
+        nodeConfig,
+        networkName: "besu-clicke-network",
+        networkId: 123,
+        enode,
+      });
+
+      console.log({ besuContainer });
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    } else {
+      console.error("An unknown error occurred:", error);
+    }
+    return;
   }
 };

@@ -23,7 +23,7 @@ const handleInput = (input: string) => {
       console.log("How many nodes do you want to create?");
       rl.question("Number of nodes: ", async (numberOfNodes) => {
         const nodeCount = parseInt(numberOfNodes);
-        if (isNaN(nodeCount) || nodeCount <= 0 || nodeCount > 9) {
+        if (isNaN(nodeCount)) {
           console.log(
             "Invalid number of nodes. Please enter a positive integer lower than 10."
           );

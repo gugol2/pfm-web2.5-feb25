@@ -1,17 +1,14 @@
-import { NodeConfig } from "../types";
-import { generateKeyPair } from "./generateKeyPair";
+import { BesuNetworkConfig, NodeConfig } from "../types";
+import { generateKeyPair } from "./generateKeyPair.js";
 
-export const createNodesConfiguration = async (config: {
-  nodeCount: number;
-  chainId: number;
-  blockPeriod: number;
-  emptyblocks?: boolean;
-}) => {
+export const createNodesConfiguration = async (
+  besuNetworkConfig: BesuNetworkConfig
+) => {
   let configuratedNodes: NodeConfig[] = [];
 
   // Generate validator keys
   const validators = await Promise.all(
-    Array(config.nodeCount).fill(0).map(generateKeyPair)
+    Array(besuNetworkConfig.nodeCount).fill(0).map(generateKeyPair)
   );
 
   // Configure nodes
