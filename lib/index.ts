@@ -30,9 +30,17 @@ const handleInput = (input: string) => {
           rl.close();
           return;
         }
-        console.log("Creating your network..");
-        await createNetwork(nodeCount);
-        rl.close();
+        rl.question(
+          "Create empty blocks, 0 => false, 1 => true, default: false: ",
+          async (emptyblocks) => {
+            const emptyblocksBool = emptyblocks === "1" ? true : false;
+            console.log(
+              `Creating a network with ${nodeCount} nodes and emptyblocks set to ${emptyblocksBool}`
+            );
+            await createNetwork(nodeCount, emptyblocksBool);
+            rl.close();
+          }
+        );
       });
       break;
     case "run-script":

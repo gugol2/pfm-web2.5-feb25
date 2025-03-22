@@ -15,19 +15,23 @@ import { readBesuPrivateKey } from "./readBesuPrivateKey.js";
 import Docker from "dockerode";
 import { getContainerIp } from "./getContainerIp.js";
 import { createNodesConfiguration } from "./createNodesConfiguration.js";
-import { validateNodeConfiguration } from "./validateNodeConfiguration.js";
+import { validateBesuNetworkConfiguration } from "./validateBesuNetworkConfiguration.js";
+import { pickEnvVariable } from "./pickEnvVariable.js";
 
-export const createNetwork = async (nodeCount: number) => {
+export const createNetwork = async (
+  nodeCount: number,
+  emptyblocks: boolean = false
+) => {
   const besuNetworkConfig = {
     nodeCount,
-    chainId: 1337,
-    blockPeriod: 15,
-    emptyblocks: false, // Optional: Set to true to create empty blocks
+    chainId: parseInt(pickEnvVariable("CHAIN_ID")),
+    blockPeriod: parseInt(pickEnvVariable("BLOCK_PERIOD")),
+    emptyblocks,
   };
 
   try {
     // Validate the node configuration
-    validateNodeConfiguration(besuNetworkConfig);
+    validateBesuNetworkConfiguration(besuNetworkConfig);
 
     const configuratedNodes = await createNodesConfiguration(besuNetworkConfig);
 
@@ -69,9 +73,6 @@ export const createNetwork = async (nodeCount: number) => {
 
     await setupDockerNetwork(docker, "besu-clicke-network");
 
-    // await removeDockerContainer(docker, configuratedNodes[0].name);
-    // await removeBesuNetworkFiles();
-
     const firstBootNode = await startBesuNode({
       docker,
       nodeConfig: configuratedNodes[0],
@@ -87,7 +88,6 @@ export const createNetwork = async (nodeCount: number) => {
     );
     console.log({ bootNodeIp });
 
-    // Usage
     const privateKey = await readBesuPrivateKey(configuratedNodes[0].name);
 
     console.log({ privateKey });
@@ -95,7 +95,7 @@ export const createNetwork = async (nodeCount: number) => {
     const enode = `enode://${bootNodePublicKey}@${bootNodeIp}:${configuratedNodes[0].p2pPort}`;
     console.log({ enode });
 
-    // OPTIONAL
+    // OPTIONAL (anogher way to get the enode)
     // const enodeUrl = await waitForNodeAndGetEnode();
     // console.log({ enodeUrl });
 

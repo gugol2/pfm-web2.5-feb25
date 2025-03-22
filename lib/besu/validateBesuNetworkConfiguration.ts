@@ -1,6 +1,6 @@
 import { BesuNetworkConfig } from "../types";
 
-const validateNodeConfiguration = (nodeConfig: BesuNetworkConfig) => {
+const validateBesuNetworkConfiguration = (nodeConfig: BesuNetworkConfig) => {
   // Validate the node count
   if (nodeConfig.nodeCount <= 0 || nodeConfig.nodeCount > 9) {
     throw new Error(
@@ -32,4 +32,4 @@ const validateNodeConfiguration = (nodeConfig: BesuNetworkConfig) => {
   }
 };
 
-export { validateNodeConfiguration };
+export { validateBesuNetworkConfiguration };
