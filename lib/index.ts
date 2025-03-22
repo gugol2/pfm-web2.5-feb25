@@ -9,7 +9,6 @@ import { getRandomEthBalanceInWei } from "./besu/optional/getRandomEthBalanceInW
 import { setupDockerNetwork } from "./docker/setupDockerNetwork.js";
 import { calculatePublicKeyForEnode } from "./besu/calculatePublicKeyForEnode.js";
 import { readBesuPrivateKey } from "./besu/readBesuPrivateKey.js";
-import { N } from "ethers";
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -20,7 +19,7 @@ const handleInput = (input: string) => {
   const command = input.trim().toLowerCase();
 
   switch (command) {
-    case "exec-besu":
+    case "besu":
       console.log("How many nodes do you want to create?");
       rl.question("Number of nodes: ", async (numberOfNodes) => {
         const nodeCount = parseInt(numberOfNodes);

@@ -1,6 +1,5 @@
 import { initDocker } from "../docker/initDocker.js";
 import { createGenesisFile } from "./createGenesisFile.js";
-import { generateKeyPair } from "./generateKeyPair.js";
 import { getAddressForFirstNode } from "./optional/getAddressForFirstNode.js";
 import { setupDockerNetwork } from "../docker/setupDockerNetwork.js";
 import { startBesuNode } from "./startBesuNode.js";
@@ -14,52 +13,8 @@ import { removeBesuNetworkFiles } from "./removeBesuNetworkFiles.js";
 import { createBesuNodeFolderStructure } from "./optional/createBesuNodeFolderStructure.js";
 import { readBesuPrivateKey } from "./readBesuPrivateKey.js";
 import Docker from "dockerode";
-import { NodeConfig } from "../types/besu.types.js";
 import { getContainerIp } from "./getContainerIp.js";
-
-const initializeNetwork = async (config: {
-  nodeCount: number;
-  chainId: number;
-  blockPeriod: number;
-  emptyblocks?: boolean;
-}) => {
-  let nodes: NodeConfig[] = [];
-
-  // Generate validator keys
-  const validators = await Promise.all(
-    Array(config.nodeCount).fill(0).map(generateKeyPair)
-  );
-
-  // Configure nodes
-  nodes = validators.map((v, i) => ({
-    name: `besu-node-${i}`,
-    rpcPort: 8545 + 10 * i,
-    wsPort: 8546 + 10 * i,
-    p2pPort: 30303 + 10 * i,
-    address: v.address,
-    privateKey: v.privateKey,
-  }));
-
-  return nodes;
-};
-
-const startSlaveNodes = async (
-  docker: Docker,
-  nodes: NodeConfig[],
-  enode: string
-) => {
-  for (const node of nodes) {
-    const besuContainer = await startBesuNode({
-      docker,
-      nodeConfig: node,
-      networkName: "besu-clicke-network",
-      networkId: 123,
-      enode,
-    });
-
-    console.log({ besuContainer });
-  }
-};
+import { createNodesConfiguration } from "./createNodesConfiguration";
 
 export const createNetwork = async (nodeCount: number) => {
   await removeBesuNetworkFiles();
@@ -71,7 +26,7 @@ export const createNetwork = async (nodeCount: number) => {
     emptyblocks: false, // Optional: Set to true to create empty blocks
   };
 
-  const configuratedNodes = await initializeNetwork(config);
+  const configuratedNodes = await createNodesConfiguration(config);
 
   console.log({ configuratedNodes });
 
@@ -136,5 +91,15 @@ export const createNetwork = async (nodeCount: number) => {
   // const enodeUrl = await waitForNodeAndGetEnode();
   // console.log({ enodeUrl });
 
-  await startSlaveNodes(docker, configuratedNodes.slice(1), enode);
+  for (const nodeConfig of configuratedNodes.slice(1)) {
+    const besuContainer = await startBesuNode({
+      docker,
+      nodeConfig,
+      networkName: "besu-clicke-network",
+      networkId: 123,
+      enode,
+    });
+
+    console.log({ besuContainer });
+  }
 };
