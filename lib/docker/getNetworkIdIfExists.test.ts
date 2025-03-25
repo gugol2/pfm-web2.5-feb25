@@ -1,5 +1,6 @@
 import { getNetworkIdIfExists } from './getNetworkIdIfExists';
 import Docker from 'dockerode';
+import { createConsoleErrorSpy } from '../test-utils/helpers';
 
 jest.mock('dockerode');
 
@@ -10,11 +11,11 @@ describe('getNetworkIdIfExists', () => {
   beforeEach(() => {
     mockDocker = new Docker() as jest.Mocked<Docker>;
     (Docker as jest.MockedClass<typeof Docker>).mockClear();
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-  });
+    consoleErrorSpy = createConsoleErrorSpy(jest.fn((errorMessage, errorCode) => console.log(errorMessage)));
+  })
 
   afterEach(() => {
-    consoleErrorSpy.mockRestore();
+    consoleErrorSpy?.mockRestore();
   });
 
   const networkName = '::network-name::';
@@ -28,7 +29,6 @@ describe('getNetworkIdIfExists', () => {
     mockDocker.listNetworks = jest.fn().mockResolvedValue([mockNetwork]);
 
     const result = await getNetworkIdIfExists(mockDocker, networkName);
-    console.log({ result });
     expect(result).toBe(networkId);
     expect(mockDocker.listNetworks).toHaveBeenCalledWith({
       filters: { name: [networkName] },
@@ -49,6 +49,7 @@ describe('getNetworkIdIfExists', () => {
   it('should handle errors and return null', async () => {
     const errorMessage = '::error-message::';
     const error = new Error(errorMessage);
+    
     mockDocker.listNetworks = jest.fn().mockRejectedValue(error);
 
     let result = null;
