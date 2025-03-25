@@ -2,40 +2,8 @@ import Docker from "dockerode";
 import { getNetworkIdIfExists } from "./getNetworkIdIfExists";
 import { getContainersInNetwork } from "./getContainersInNetwork";
 import { disconnectAndStopContainer } from "./disconnectAndStopContainer";
-
-// Function to delete a network
-async function deleteNetwork(docker: Docker, networkId: string): Promise<void> {
-  try {
-    const network = docker.getNetwork(networkId);
-    await network.remove();
-    console.log(`Network ${networkId.substring(0, 12)} deleted successfully`);
-  } catch (error) {
-    console.error("Error deleting network:", error);
-    throw error;
-  }
-}
-
-// Function to create a simple Docker network
-async function createNetwork(
-  docker: Docker,
-  networkName: string
-): Promise<string> {
-  try {
-    const network = await docker.createNetwork({
-      Name: networkName,
-      Driver: "bridge",
-      CheckDuplicate: true,
-    });
-
-    console.log(`Network "${networkName}" created successfully`);
-    console.log(`Network ID: ${network.id}`);
-
-    return network.id;
-  } catch (error) {
-    console.error("Error creating Docker network:", error);
-    throw error;
-  }
-}
+import { deleteNetwork } from "./deleteNetwork";
+import { createNetwork } from "./createNetwork";
 
 // Main function to handle the network operations
 async function setupDockerNetwork(
