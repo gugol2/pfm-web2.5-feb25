@@ -71,7 +71,7 @@ const showHelp = () => {
   console.log("\nAvailable commands:");
   console.log(" - help: Show available commands");
   console.log(" - run-script: Run the script");
-  console.log(" - exec-besu: start a besu network");
+  console.log(" - besu: start a besu network");
   console.log(" - exit: Quit the program\n");
 };
 

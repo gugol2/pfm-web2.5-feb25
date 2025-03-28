@@ -6,7 +6,7 @@ import { pickEnvVariable } from "./pickEnvVariable.js";
 const readBesuPrivateKey = async (
   dataPath: string,
   encoding: BufferEncoding = "utf-8",
-  maxRetries: number = 10,
+  maxRetries: number = 20,
   retryDelayMs: number = 1000
 ): Promise<string> => {
   const networkFolderPath = pickEnvVariable("NETWORK_FOLDER_PATH");

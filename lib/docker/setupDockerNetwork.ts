@@ -1,9 +1,9 @@
 import Docker from "dockerode";
-import { getNetworkIdIfExists } from "./getNetworkIdIfExists";
-import { getContainersInNetwork } from "./getContainersInNetwork";
-import { disconnectAndStopContainer } from "./disconnectAndStopContainer";
-import { deleteNetwork } from "./deleteNetwork";
-import { createNetwork } from "./createNetwork";
+import { getNetworkIdIfExists } from "./getNetworkIdIfExists.js";
+import { getContainersInNetwork } from "./getContainersInNetwork.js";
+import { disconnectAndStopContainer } from "./disconnectAndStopContainer.js";
+import { deleteNetwork } from "./deleteNetwork.js";
+import { createNetwork } from "./createNetwork.js";
 
 // Main function to handle the network operations
 async function setupDockerNetwork(
