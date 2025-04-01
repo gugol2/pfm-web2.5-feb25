@@ -1,15 +1,17 @@
-import { exec } from "child_process";
+import { spawn } from 'child_process';
 
 export const runScript = () => {
-  exec("script/script.sh", (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error executing script: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      console.error(`Script stderr: ${stderr}`);
-      return;
-    }
-    console.log(`Script output: ${stdout}`);
+  const scriptProcess = spawn('script/script.sh', [], { shell: true });
+  
+  scriptProcess.stdout.on('data', (data) => {
+    console.log(`Output: ${data}`);
+  });
+  
+  scriptProcess.stderr.on('data', (data) => {
+    console.error(`Error: ${data}`);
+  });
+  
+  scriptProcess.on('close', (code) => {
+    console.log(`Script exited with code ${code}`);
   });
 };

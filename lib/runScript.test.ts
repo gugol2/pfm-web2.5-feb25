@@ -1,64 +1,136 @@
-import { exec } from "child_process";
-import { runScript } from "./runScript";
 
-jest.mock("child_process", () => ({
-  exec: jest.fn(),
+import { runScript } from './runScript';
+import { spawn } from 'child_process';
+
+
+// Mock child_process.spawn
+jest.mock('child_process', () => ({
+  spawn: jest.fn()
 }));
 
-describe("runScript", () => {
+describe('runScript function', () => {
+  let mockStdout: any;
+  let mockStderr: any;
+  let mockOn: any;
+  let spawnMock: jest.Mock;
+  
   beforeEach(() => {
+    // Create mock event emitters for stdout and stderr
+    mockStdout = {
+      on: jest.fn()
+    };
+    
+    mockStderr = {
+      on: jest.fn()
+    };
+    
+    // Create mock 'on' event handler for the process
+    mockOn = jest.fn();
+    
+    // Configure the spawn mock
+    spawnMock = spawn as jest.Mock;
+    spawnMock.mockReturnValue({
+      stdout: mockStdout,
+      stderr: mockStderr,
+      on: mockOn
+    });
+    
+    // Spy on console methods
+    jest.spyOn(console, 'log').mockImplementation();
+    jest.spyOn(console, 'error').mockImplementation();
+  });
+  
+  afterEach(() => {
     jest.clearAllMocks();
   });
-
-  it("should log stdout when script executes successfully", () => {
-    const mockExec = exec as unknown as jest.Mock;
-
-    mockExec.mockImplementation((_command, callback) => {
-      callback(null, "Success output", "");
-    });
-
-    const consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
-
+  
+  it('should spawn the script process with correct parameters', () => {
     runScript();
-
-    expect(consoleLogSpy).toHaveBeenCalledWith("Script output: Success output");
-
-    consoleLogSpy.mockRestore();
+    
+    expect(spawnMock).toHaveBeenCalledWith('script/script.sh', [], { shell: true });
   });
-
-  it("should log an error message if exec returns an error", () => {
-    const mockExec = exec as unknown as jest.Mock;
-
-    mockExec.mockImplementation((_command, callback) => {
-      callback(new Error("Execution failed"), "", "");
-    });
-
-    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
-
+  
+  it('should set up event listeners for stdout, stderr, and close events', () => {
     runScript();
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "Error executing script: Execution failed"
-    );
-
-    consoleErrorSpy.mockRestore();
+    
+    expect(mockStdout.on).toHaveBeenCalledWith('data', expect.any(Function));
+    expect(mockStderr.on).toHaveBeenCalledWith('data', expect.any(Function));
+    expect(mockOn).toHaveBeenCalledWith('close', expect.any(Function));
   });
-
-  it("should log stderr if script produces an error output", () => {
-    const mockExec = exec as unknown as jest.Mock;
-
-    mockExec.mockImplementation((_command, callback) => {
-      callback(null, "", "Some error output");
-    });
-
-    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
-
+  
+  it('should log stdout data when received', () => {
     runScript();
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "Script stderr: Some error output"
-    );
-
-    consoleErrorSpy.mockRestore();
+    
+    // Get the callback function that was registered for stdout data
+    const stdoutCallback = mockStdout.on.mock.calls[0][1];
+    
+    // Call it with some test data
+    stdoutCallback(Buffer.from('Test output'));
+    
+    expect(console.log).toHaveBeenCalledWith('Output: Test output');
+  });
+  
+  it('should log stderr data when received', () => {
+    runScript();
+    
+    // Get the callback function that was registered for stderr data
+    const stderrCallback = mockStderr.on.mock.calls[0][1];
+    
+    // Call it with some test data
+    stderrCallback(Buffer.from('Test error'));
+    
+    expect(console.error).toHaveBeenCalledWith('Error: Test error');
+  });
+  
+  it('should log exit code when process closes', () => {
+    runScript();
+    
+    // Get the callback function that was registered for the close event
+    const closeCallback = mockOn.mock.calls[0][1];
+    
+    // Call it with a test exit code
+    closeCallback(1);
+    
+    expect(console.log).toHaveBeenCalledWith('Script exited with code 1');
+  });
+  
+  it('should handle a successful script execution correctly', () => {
+    runScript();
+    
+    // Get all the callback functions
+    const stdoutCallback = mockStdout.on.mock.calls[0][1];
+    const stderrCallback = mockStderr.on.mock.calls[0][1];
+    const closeCallback = mockOn.mock.calls[0][1];
+    
+    // Simulate a successful script execution
+    stdoutCallback(Buffer.from('Starting script'));
+    stdoutCallback(Buffer.from('Script running'));
+    stdoutCallback(Buffer.from('Script completed'));
+    closeCallback(0);
+    
+    expect(console.log).toHaveBeenCalledWith('Output: Starting script');
+    expect(console.log).toHaveBeenCalledWith('Output: Script running');
+    expect(console.log).toHaveBeenCalledWith('Output: Script completed');
+    expect(console.log).toHaveBeenCalledWith('Script exited with code 0');
+  });
+  
+  it('should handle a failing script execution correctly', () => {
+    runScript();
+    
+    // Get all the callback functions
+    const stdoutCallback = mockStdout.on.mock.calls[0][1];
+    const stderrCallback = mockStderr.on.mock.calls[0][1];
+    const closeCallback = mockOn.mock.calls[0][1];
+    
+    // Simulate a failing script execution
+    stdoutCallback(Buffer.from('Starting script'));
+    stderrCallback(Buffer.from('Error in script'));
+    stderrCallback(Buffer.from('Command not found'));
+    closeCallback(1);
+    
+    expect(console.log).toHaveBeenCalledWith('Output: Starting script');
+    expect(console.error).toHaveBeenCalledWith('Error: Error in script');
+    expect(console.error).toHaveBeenCalledWith('Error: Command not found');
+    expect(console.log).toHaveBeenCalledWith('Script exited with code 1');
   });
 });

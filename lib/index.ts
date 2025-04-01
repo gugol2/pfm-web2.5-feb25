@@ -43,7 +43,7 @@ const handleInput = (input: string) => {
         );
       });
       break;
-    case "run-script":
+    case "script":
       console.log("running script");
       runScript();
       rl.close();
@@ -70,7 +70,7 @@ const promptInput = () => {
 const showHelp = () => {
   console.log("\nAvailable commands:");
   console.log(" - help: Show available commands");
-  console.log(" - run-script: Run the script");
+  console.log(" - script: Run the script");
   console.log(" - besu: start a besu network");
   console.log(" - exit: Quit the program\n");
 };
